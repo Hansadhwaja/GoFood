@@ -12,7 +12,7 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const addUser = { name, email, password,location};
-        const response = await fetch("http://localhost:5000/create", {
+        const response = await fetch("https://gofood-gpmv.onrender.com/create", {
             method: "POST",
             body: JSON.stringify(addUser),
             headers: {

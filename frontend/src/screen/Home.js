@@ -9,7 +9,7 @@ const Home = () => {
     const [catData, setCatData] = useState([]);
     const [search, setSearch] = useState('');
     const searchFood = async () => {
-        const response = await fetch("http://localhost:5000/foodData");
+        const response = await fetch("https://gofood-gpmv.onrender.com/foodData");
         const data = await response.json();
         setFoodData(data[0]);
         setCatData(data[1]);

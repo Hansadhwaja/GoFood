@@ -15,7 +15,7 @@ const Cart = () => {
     }
     const handleCheckout=async()=>{
         const userEmail=localStorage.getItem("userEmail");
-        const response=await fetch("http://localhost:5000/orderData",
+        const response=await fetch("https://gofood-gpmv.onrender.com/orderData",
         {
             method:'POST',
             headers:{

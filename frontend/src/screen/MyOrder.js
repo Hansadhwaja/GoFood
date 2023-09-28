@@ -6,7 +6,7 @@ const MyOrder = () => {
     let data = "";
     const myOrder = async () => {
         const userEmail = localStorage.getItem("userEmail");
-        const response = await fetch("http://localhost:5000/myOrderData",
+        const response = await fetch("https://gofood-gpmv.onrender.com/myOrderData",
             {
                 method: 'POST',
                 headers: {

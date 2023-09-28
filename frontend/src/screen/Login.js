@@ -8,7 +8,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validateUser = { email, password};
-    const response = await fetch("http://localhost:5000/login", {
+    const response = await fetch("https://gofood-gpmv.onrender.com/login", {
         method: "POST",
         body: JSON.stringify(validateUser),
         headers: {
