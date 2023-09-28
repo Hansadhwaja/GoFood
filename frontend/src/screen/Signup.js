@@ -37,9 +37,9 @@ const Signup = () => {
 
 
     return (
-        <div className='container m-5'>
-            <div className="d-flex align-items-center py-4 bg-body-tertiary">
-                <div className="form-signin w-50 m-auto">
+        <div className='container m-sm-5 my-5'>
+            <div className="d-flex align-items-center py-2 py-sm-4 bg-body-tertiary">
+                <div className="form-signin w-sm-50 w-100 m-auto">
                     <form onSubmit={handleSubmit}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="72" height="57" fill="currentColor" className="bi bi-box2-heart-fill" viewBox="0 0 16 16">
                             <path d="M3.75 0a1 1 0 0 0-.8.4L.1 4.2a.5.5 0 0 0-.1.3V15a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V4.5a.5.5 0 
