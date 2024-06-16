@@ -1,85 +1,85 @@
 import React, { useState, useEffect } from 'react'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
 import Card from '../components/Card'
+import Loading from '../components/Loading'
+import axios from 'axios'
+import Carousel from '../components/Carousel'
 
 
 const Home = () => {
     const [foodData, setFoodData] = useState([]);
     const [catData, setCatData] = useState([]);
     const [search, setSearch] = useState('');
-    const searchFood = async () => {
-        const response = await fetch("https://gofood-gpmv.onrender.com/foodData");
-        const data = await response.json();
-        setFoodData(data[0]);
-        setCatData(data[1]);
-        console.log(foodData);
-        console.log(catData);
-    }
+    const [loading, setLoading] = useState(false)
+
 
     useEffect(() => {
+        const searchFood = async () => {
+            setLoading(true)
+            const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/foodData`);
+            setFoodData(response.data[0]);
+            setCatData(response.data[1]);
+            setLoading(false)
+        }
         searchFood();
     }, []);
     return (
-        <section>
-            <div><Navbar /></div>
-            <div>
-                <div id="carouselExampleFade" className="carousel slide carousel-fade" data-bs-ride="carousel" style={{ objectFit: 'contain !important' }}>
-                    <div className="carousel-inner" id='carousel'>
-                        <div className='carousel-caption' style={{ zIndex: '10' }}>
-                            <div className="d-flex justify-content-center" role="search">
-                                <input className="form-control me-2" type="search" placeholder="Search"
-                                    aria-label="Search" value={search}  onChange={(e)=>{setSearch(e.target.value)}}/>
-                                <button className="btn btn-outline-success text-white bg-success" type="submit">Search</button>
-                            </div>
-
-                        </div>
-                        <div className="carousel-item active">
-                            <img src="https://source.unsplash.com/random/300×300?burger" alt="random_item" className="d-block w-100" style={{ filter: "brightness(30%)" }} />
-                        </div>
-                        <div className="carousel-item">
-                            <img src="https://source.unsplash.com/random/300×300?pastry" alt="random_item" className="d-block w-100" style={{ filter: "brightness(30%)" }} />
-                        </div>
-                        <div className="carousel-item">
-                            <img src="https://source.unsplash.com/random/300×300?noodles" alt="random_item" className="d-block w-100" style={{ filter: "brightness(30%)" }} />
-                        </div>
+        <section className='w-full'>
+            {loading ? (
+                <Loading />
+            ) : (
+                <div>
+                    <div className='w-full'>
+                        <Carousel />
                     </div>
-                    <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
-                        <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span className="visually-hidden">Previous</span>
-                    </button>
-                    <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
-                        <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span className="visually-hidden">Next</span>
-                    </button>
-                </div>
-            </div>
-            <div className='container'>
-                {catData.map((food) => (
-                    <div className='row mb-3'>
-                        <div
-                            key={food._id}
-                            className='fs-3 m-3'
-                        >
-                            {food.CategoryName}
-                        </div>
-                        <hr />
-                        {foodData.filter((item) =>
-                            (item.CategoryName === food.CategoryName)&&
-                            (item.name.toLowerCase().includes(search.toLocaleLowerCase())))
-                            .map((filterItem) => (
-                                <div key={filterItem._id}
-                                    className='col-12 col-md-6 col-lg-3'>
-                                    <Card item={filterItem} />
+                    <div className="mt-4 inset-0 flex justify-center items-center z-20 p-2">
+                        <form className="w-full flex max-w-2xl mx-auto gap-2">
+                            <input
+                                className="w-full px-4 py-2 rounded border-2"
+                                type="search"
+                                placeholder="Search"
+                                aria-label="Search"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            <button
+                                className="bg-green-500 text-white px-4 py-2 rounded"
+                                type="submit"
+                            >
+                                Search
+                            </button>
+                        </form>
+                    </div>
+                    <div className='flex flex-wrap w-full overflow-auto'>
+
+                        {catData.map((food) => (
+                            <div className='row mb-3' key={food.CategoryName}>
+                                <div
+                                    key={food._id}
+                                    className='fs-3 m-3'
+                                >
+                                    {food.CategoryName}
                                 </div>
+                                <hr />
+                                <div className='flex flex-wrap gap-4'>
+                                    {foodData.filter((item) =>
+                                        (item.CategoryName === food.CategoryName) &&
+                                        (item.name.toLowerCase().includes(search.toLocaleLowerCase())))
+                                        .map((filterItem) => (
+                                            <div key={filterItem._id}
+                                                className='m-4'>
+                                                <Card item={filterItem} />
+                                            </div>
 
-                            ))}
+                                        ))}
+                                </div>
+                            </div>
+                        ))
+                        }
+
                     </div>
-                ))
-                }
+                </div>
+            )}
 
-            </div>
-            <div><Footer /></div>
         </section>
 
     )

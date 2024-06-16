@@ -1,65 +1,179 @@
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useEffect, useRef, useState } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import Badge from "react-bootstrap/Badge";
 import Modal from '../Modal';
 import Cart from '../screen/Cart';
-import { useCart } from './ContextReducer';
+import { RiMenu3Fill } from "react-icons/ri";
+import logo from '../assets/logo.svg'
+import { useSelector } from 'react-redux';
+
 
 const Navbar = () => {
-    const data = useCart();
+    const data = useSelector((state) => state.cart);
     const [cartView, setCartView] = useState(false);
+    const [isTokenAvailable, setIsTokenAvailable] = useState(false)
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
+    const sidebarRef = useRef(null);
+
+    useEffect(() => {
+        if (localStorage.getItem("authToken")) {
+            setIsTokenAvailable(true)
+        }
+    }, []);
+
+    const handleClickOutside = (event) => {
+        if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+            setIsSidebarOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isSidebarOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isSidebarOpen]);
+
+
+    const navItems = [
+        {
+            label: "Home",
+            link: "/",
+            authenticate: true
+        },
+        {
+            label: "My Orders",
+            link: "/myOrder",
+            authenticate: isTokenAvailable
+        },
+        {
+            label: "Login",
+            link: "/login",
+            authenticate: !isTokenAvailable
+        },
+        {
+            label: "SignUp",
+            link: "/create",
+            authenticate: !isTokenAvailable
+        }
+    ]
+
+
     const handleLogout = () => {
         localStorage.removeItem("authToken");
+        localStorage.removeItem("userEmail");
+        toggleSidebar()
         navigate("/login");
     }
-    return (
-        <nav className="navbar navbar-expand-lg  bg-success navbar-dark"  >
-            <div className="container-fluid">
-                <svg xmlns="http://www.w3.org/2000/svg" width="72" height="57" fill="currentColor" className="bi bi-box2-heart-fill text-white" viewBox="0 0 16 16">
-                    <path d="M3.75 0a1 1 0 0 0-.8.4L.1 4.2a.5.5 0 0 0-.1.3V15a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V4.5a.5.5 0 0 0-.1-.3L13.05.4a1 1 0 0 0-.8-.4h-8.5ZM8.5 4h6l.5.667V5H1v-.333L1.5 4h6V1h1v3ZM8 7.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132Z"></path>
-                </svg>
-                <Link className="navbar-brand fs-1 fst-italic " to="/">GoFood</Link>
-                <button 
-                className="navbar-toggler" 
-                type="button" 
-                data-bs-toggle="collapse"    
-                data-bs-target="#navbarNav" 
-                aria-controls="navbarNav" 
-                aria-expanded="false" 
-                aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarNav" >
-                    <ul className="navbar-nav me-auto mb-2" aria-labelledby="navbarNav">
-                        <li className="nav-item">
-                            <Link className="nav-link active  fs-5" aria-current="page" to="/">Home</Link>
-                        </li>
-                        {(localStorage.getItem("authToken")) ?
-                            <li className="nav-item">
-                                <Link className="nav-link fs-5" aria-current="page" to="/myOrder">My Orders</Link>
-                            </li>
-                            : ""
-                        }
-                        {(localStorage.getItem("authToken")) ?
-                            <div className='d-flex'>
-                                <div className="btn bg-white mx-1 text-danger fs-5" onClick={handleLogout}>Logout</div>
-                                <div className="btn bg-white mx-1 text-success fs-5" onClick={() => setCartView(true)}>
-                                    My Cart{" "}
-                                    <Badge pill bg="danger">{data.length}</Badge>
-                                </div>
-                                {cartView ? <Modal onClose={() => setCartView(false)}><Cart /></Modal> : null}
-                            </div>
 
-                            :
-                            <div className='d-flex'>
-                                <Link className="btn bg-white mx-1 text-success fs-5" to="/login">Login</Link>
-                                <Link className="btn bg-white mx-1 text-success fs-5" to="/create">Signup</Link>
-                            </div>
-                        }
-                    </ul>
+    const toggleSidebar = () => {
+        setIsSidebarOpen(prev => !prev)
+    }
+
+    return (
+        <nav className=" bg-green-400 flex p-4 gap-2">
+            <div className='flex gap-3'>
+                <Link to="/" className='my-auto'>
+                    <img src={logo} alt='logo' className='' />
+                </Link>
+
+                <Link to="/" className='my-auto'>
+                    <button className='text-white text-3xl font-semibold'>
+                        GoFood
+                    </button>
+                </Link>
+            </div>
+
+            <div className='ml-auto'>
+                <div className='flex sm:hidden'>
+                    <button className="text-white hover:border-2 p-2 rounded-xl" onClick={toggleSidebar}>
+                        <RiMenu3Fill size={32} />
+                    </button>
+                </div>
+                <div className='hidden sm:flex'>
+                    {navItems.map(item => item.authenticate ? (
+                        <NavLink
+                            to={item.link}
+                            key={item.label}
+                            className={({ isActive }) => (isActive ? 'bg-red-500 rounded-xl mx-2' : " ")}
+                        >
+                            <button className='text-white text-md font-semibold hover:bg-red-500 px-4 py-2 rounded-xl' >
+                                {item.label}
+                            </button>
+                        </NavLink>
+
+                    ) : " ")}
+
+
+                    {isTokenAvailable && (
+                        <div>
+                            <button className='text-white text-md font-semibold hover:bg-red-500 px-4 py-2 rounded-xl' onClick={() => setCartView(true)}>
+                                My Cart{" "}
+                                <Badge pill bg="primary">{data.length}</Badge>
+                            </button>
+                            {cartView ? <Modal onClose={() => setCartView(false)}><Cart /></Modal> : null}
+                            <button className='text-white text-md font-semibold hover:bg-red-500 px-4 py-2 rounded-xl' onClick={handleLogout}>Logout</button>
+                        </div>
+                    )}
                 </div>
             </div>
+
+
+            {isSidebarOpen && (
+                <div ref={sidebarRef} className={`fixed inset-y-0 right-0 bg-green-400 border-l-2 z-40 text-white transform transition-transform duration-100 ease-in-out ${isSidebarOpen ? ' w-64' : 'w-0'}`}>
+                    <div className="p-4">
+                        <div className='p-2 mt-10'>
+                            <Link to={'/'} onClick={toggleSidebar}>
+                                <img src={logo} alt='logo' className='' />
+                            </Link>
+                            <Link to="/" className='mt-3'>
+                                <button className='text-white text-3xl font-semibold'>
+                                    GoFood
+                                </button>
+                            </Link>
+                        </div>
+                        <div className='flex flex-col ml-auto p-2 text-xl gap-2 mt-10 text-center'>
+                            {navItems.map((item) =>
+                                item.authenticate &&
+                                (
+                                    <NavLink
+                                        to={item.link}
+                                        key={item.label}
+                                        onClick={toggleSidebar}
+                                        className={({ isActive }) => isActive ? 'bg-red-500 rounded-xl ' : 'hover:bg-red-600 rounded-xl'}
+                                    >
+                                        <button className='px-4 py-2 text-white'>{item.label}</button>
+                                    </NavLink>
+
+                                ))}
+                        </div>
+
+
+                        {isTokenAvailable && (
+                            <div className='text-center'>
+                                <button className='text-white text-xl font-semibold hover:bg-red-500 rounded-xl w-full p-2 ml-2' 
+                                onClick={() => {
+                                    setCartView(true)
+                                    toggleSidebar()
+                                    }}>
+                                    My Cart{" "}
+                                    <Badge pill bg="primary">{data.length}</Badge>
+                                </button>
+                                {cartView ? <Modal onClose={() => setCartView(false)}><Cart /></Modal> : null}
+                                <button className='text-white text-xl w-full font-semibold p-2 rounded-xl' onClick={handleLogout}>Logout</button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+            )}
+
         </nav>
 
     )

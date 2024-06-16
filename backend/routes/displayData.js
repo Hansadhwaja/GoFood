@@ -11,8 +11,6 @@ router.get("/foodData", async (req, res) => {
         const allData = await Food.find();
         const catData = await Catagory.find();
 
-        //res.status(200).json(allData);
-       // res.status(200).json(catData);
        res.send([allData,catData]);
     } catch (error) {
         console.log(error);

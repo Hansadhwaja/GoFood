@@ -1,11 +1,13 @@
 import React from 'react'
-import { useCart, useDispatchCart } from '../components/ContextReducer'
+import { useSelector, useDispatch } from 'react-redux';
+import { removeItem,dropCart } from '../redux/cartSlice';
 import trash from "../trash.svg";
+import axios from 'axios';
 const Cart = () => {
-    const data=useCart();
-    const dispatch=useDispatchCart();
-    if(data.length===0){
-        return(
+    const data = useSelector((state) => state.cart);
+    const dispatch = useDispatch();
+    if (data.length === 0) {
+        return (
             <div>
                 <div className='m-5 w-100 text-center fs-3 text-white'>
                     The Cart is Empty!
@@ -13,38 +15,29 @@ const Cart = () => {
             </div>
         )
     }
-    const handleCheckout=async()=>{
-        const userEmail=localStorage.getItem("userEmail");
-        const response=await fetch("https://gofood-gpmv.onrender.com/orderData",
-        {
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({
-                order_data:data,
-                email:userEmail,
-                order_date:new Date().toDateString()
-            })
-        });
-        const result=await response.json();
-       
-    if (response.ok) {
-        console.log(result);
-      dispatch({ type: "DROP" });
-    }
-    if(!response.ok){
-        console.log(result.error);
-  
-      }
+    const handleCheckout = async () => {
+        try {
+            const userEmail = localStorage.getItem("userEmail");
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/orderData`, {
+                order_data: data,
+                email: userEmail,
+                order_date: new Date().toDateString()
+            });
+            console.log(response);
+            if (response) {
+                dispatch(dropCart());
+            }
+        } catch (error) {
+            console.log('Error while ordering: ',error);
+        }
+
     };
 
 
-    const totalPrice=data.reduce((total,food)=>total+food.price,0);
+    const totalPrice = data.reduce((total, food) => total + food.price, 0);
     return (
         <div>
-            <div className='container m-auto mt-5 table-responsive
-     table-responsive-smtable-responsive-md'>
+            <div className='container m-auto mt-5 table-responsive table-responsive-smtable-responsive-md'>
                 <table className="table table-hover">
                     <thead className='text-success fs-4'>
                         <tr className='text-success'>
@@ -57,24 +50,24 @@ const Cart = () => {
                         </tr>
                     </thead>
                     <tbody>
-                    {data.map((food,index)=>(
-                        <tr key={food.id}>
-                            <th scope="row">{index+1}</th>
-                            <td>{food.name}</td>
-                            <td>{food.qty}</td>
-                            <td>{food.size}</td>
-                            <td>{food.price}</td>
-                            <td>
-                                <button type="button" className='btn p-0'>
-                                    <img 
-                                    src={trash}
-                                    alt='delete'
-                                    onClick={()=>{dispatch({type:"REMOVE",index:index }) }} />
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                       
+                        {data.map((food, index) => (
+                            <tr key={index}>
+                                <th scope="row">{index + 1}</th>
+                                <td>{food.name}</td>
+                                <td>{food.qty}</td>
+                                <td>{food.size}</td>
+                                <td>{food.price}</td>
+                                <td>
+                                    <button type="button" className='btn p-0'>
+                                        <img
+                                            src={trash}
+                                            alt='delete'
+                                            onClick={() => { dispatch(removeItem(index)); }} />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+
                     </tbody>
                 </table>
                 <div>

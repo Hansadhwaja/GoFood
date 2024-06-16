@@ -28,15 +28,18 @@ router.get("/", async (req, res) => {
 router.post("/create",
     body('email').isEmail(),
     body('password').isLength({ min: 5 }),
-    body('name').isLength({ min: 5 }),
     async (req, res) => {
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            return res.status(400).json({ result: result.array() });
+            return res.status(400).json({ result: result.array(), message:"Enter Required Field" });
         }
 
         try {
             const { name, email, password, location } = req.body;
+            const existingUser = await User.findOne({email});
+            if(existingUser){
+                return res.send('User already exists')
+            }
             const salt = await bcrypt.genSalt(10);
             const secPassword = await bcrypt.hash(password, salt);
 

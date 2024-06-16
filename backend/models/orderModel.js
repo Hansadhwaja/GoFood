@@ -6,11 +6,11 @@ const orderSchema=new mongoose.Schema({
         required:true,
         unique:true
     },
-    order_data:{
+    order_item:{
         type:Array,
         required:true
-    },
-});
+    }
+},{versionKey:false});
 
 const Order=mongoose.model("order",orderSchema);
 
