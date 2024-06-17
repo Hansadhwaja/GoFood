@@ -5,22 +5,26 @@ import Modal from '../Modal';
 import Cart from '../screen/Cart';
 import { RiMenu3Fill } from "react-icons/ri";
 import logo from '../assets/logo.svg'
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
+import { logout } from '../redux/authSlice';
 
 
 const Navbar = () => {
     const data = useSelector((state) => state.cart);
+    const user = useSelector((state) => state.auth)
     const [cartView, setCartView] = useState(false);
-    const [isTokenAvailable, setIsTokenAvailable] = useState(false)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
     const sidebarRef = useRef(null);
+    const dispatch = useDispatch();
+    console.log('User',user);
 
-    useEffect(() => {
-        if (localStorage.getItem("authToken")) {
-            setIsTokenAvailable(true)
-        }
-    }, [isTokenAvailable]);
+    // useEffect(() => {
+    //     if (user) {
+    //         setIsTokenAvailable(true)
+    //     }
+    //     console.log("Token:",isTokenAvailable);
+    // }, [isTokenAvailable]);
 
     const handleClickOutside = (event) => {
         if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -50,24 +54,23 @@ const Navbar = () => {
         {
             label: "My Orders",
             link: "/myOrder",
-            authenticate: isTokenAvailable
+            authenticate: user
         },
         {
             label: "Login",
             link: "/login",
-            authenticate: !isTokenAvailable
+            authenticate: !user
         },
         {
             label: "SignUp",
             link: "/create",
-            authenticate: !isTokenAvailable
+            authenticate: !user
         }
     ]
 
 
     const handleLogout = () => {
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("userEmail");
+        dispatch(logout());
         toggleSidebar()
         navigate("/login");
     }
@@ -111,7 +114,7 @@ const Navbar = () => {
                     ) : " ")}
 
 
-                    {isTokenAvailable && (
+                    {user && (
                         <div>
                             <button className='text-white text-md font-semibold hover:bg-red-500 px-4 py-2 rounded-xl' onClick={() => setCartView(true)}>
                                 My Cart{" "}
@@ -126,7 +129,7 @@ const Navbar = () => {
 
 
             {isSidebarOpen && (
-                <div ref={sidebarRef} className={`fixed inset-y-0 right-0 bg-green-400 border-l-2 z-40 text-white transform transition-transform duration-100 ease-in-out ${isSidebarOpen ? ' w-64' : 'w-0'}`}>
+                <div ref={sidebarRef} className={`sm:hidden fixed inset-y-0 right-0 bg-green-400 border-l-2 z-40 text-white transform transition-transform duration-100 ease-in-out ${isSidebarOpen ? ' w-64' : 'w-0'}`}>
                     <div className="p-4">
                         <div className='p-2 mt-10'>
                             <Link to={'/'} onClick={toggleSidebar}>
@@ -155,7 +158,7 @@ const Navbar = () => {
                         </div>
 
 
-                        {isTokenAvailable && (
+                        {user && (
                             <div className='text-center'>
                                 <button className='text-white text-xl font-semibold hover:bg-red-500 rounded-xl w-full p-2 ml-2'
                                     onClick={() => {

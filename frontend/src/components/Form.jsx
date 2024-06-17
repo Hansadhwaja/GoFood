@@ -2,10 +2,15 @@ import React from 'react'
 import { useForm } from "react-hook-form"
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { login } from '../redux/authSlice';
+
 
 const Form = ({ label }) => {
     const { register, handleSubmit } = useForm();
     const navigate = useNavigate()
+    const dispatch = useDispatch();
+
     const submit = async (data) => {
         try {
             console.log(data);
@@ -13,19 +18,19 @@ const Form = ({ label }) => {
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/create`, data);
                 console.log('Response:', response);
                 if (response) {
-                    if(response.data === 'User already exists'){
+                    if (response.data === 'User already exists') {
                         alert('This Email already exists.Try Logging in.')
                     }
-                    navigate("/login");
+                    dispatch(login());
+                    navigate("/");
                 }
             }
             else {
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`, data);
                 console.log('Response:', response);
                 if (response) {
-                    console.log('Data:',data);
-                    localStorage.setItem("authToken", response.data.authToken);
-                    localStorage.setItem("userEmail", data.email);
+                    console.log('Data:', data);
+                   dispatch(login());
                     navigate("/");
                 }
 

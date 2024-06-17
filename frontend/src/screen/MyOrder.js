@@ -37,8 +37,8 @@ const MyOrder = () => {
                     <h1 className='text-xl font-semibold p-3 mt-10'>No Orders.</h1>
                 </div>
             )}
-            {orderData.map((element) => (
-                <div>
+            {orderData.map((element,index) => (
+                <div key={index} className='mt-5'>
                     <h1 className='text-green-700 m-2'>{element.date}</h1>
                     <hr />
                     <div className='flex flex-wrap'>
