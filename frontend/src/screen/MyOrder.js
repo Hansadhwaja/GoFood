@@ -37,17 +37,19 @@ const MyOrder = () => {
                     <h1 className='text-xl font-semibold p-3 mt-10'>No Orders.</h1>
                 </div>
             )}
-            {orderData.map((element,index) => (
+            {orderData.map((element, index) => (
                 <div key={index} className='mt-5'>
                     <h1 className='text-green-700 m-2'>{element.date}</h1>
                     <hr />
                     <div className='flex flex-wrap'>
                         {element?.data?.map((item) => (
-                            <div key={item.id} className='m-2 border-2 border-green-500 p-3 rounded-lg font-semibold w-[180px]'>
+                            <div key={item.id} className='m-2 border-2 border-green-500 p-3 rounded-lg font-semibold w-full sm:w-[180px]'>
                                 <p className='text-green-500 text-2xl'>{item.name}</p>
-                                <p className='text-green-400 text-lg'>{item.size}</p>
-                                <p className='text-slate-500 text-lg'>{item.qty}</p>
-                                <p className='text-xl text-green-500'>₹{item.price}/-</p>
+                                <div className='flex gap-3'>
+                                    <p className='text-green-400 text-lg'>{item.size}</p>
+                                    <p className='text-slate-500 text-lg'>{item.qty}</p>
+                                    <p className='text-xl text-green-500'>₹{item.price}/-</p>
+                                </div>
                             </div>
                         ))}
                     </div>

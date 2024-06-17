@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addItem, updateItem } from '../redux/cartSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Card = ({ item }) => {
     const data = useSelector((state) => state.cart);
@@ -8,6 +9,8 @@ const Card = ({ item }) => {
     const priceRef = useRef();
     const price = item.options[0];
     const options = Object.keys(price);
+    const user = useSelector(state => state.auth)
+    const navigate = useNavigate();
 
     const [qty, setQty] = useState(1);
     const [size, setSize] = useState(options[0]);
@@ -17,6 +20,11 @@ const Card = ({ item }) => {
     }, []);
 
     const handleAddToCart = () => {
+        if (!user) {
+            navigate('/login')
+            return;
+        }
+
         const existingItem = data.find((thing) => thing.id === item._id && thing.size === size);
 
         const finalPrice = qty * parseInt(price[size]);
