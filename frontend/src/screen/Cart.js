@@ -23,7 +23,6 @@ const Cart = () => {
                 email: userEmail,
                 order_date: new Date().toDateString()
             });
-            console.log(response);
             if (response) {
                 dispatch(dropCart());
             }

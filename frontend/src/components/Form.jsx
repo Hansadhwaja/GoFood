@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form"
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { login } from '../redux/authSlice';
+import { login, logout } from '../redux/authSlice';
 
 
 const Form = ({ label }) => {
@@ -13,16 +13,19 @@ const Form = ({ label }) => {
 
     const submit = async (data) => {
         try {
-            console.log(data);
             if (label === 'SignUp') {
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/create`, data);
-                console.log('Response:', response);
                 if (response) {
                     if (response.data === 'User already exists') {
                         alert('This Email already exists.Try Logging in.')
+                        dispatch(logout());
+                        navigate('/login')
                     }
-                    dispatch(login());
-                    navigate("/");
+                    else {
+                        dispatch(login());
+                        navigate("/");
+                    }
+
                 }
             }
             else {
@@ -30,7 +33,7 @@ const Form = ({ label }) => {
                 console.log('Response:', response);
                 if (response) {
                     console.log('Data:', data);
-                   dispatch(login());
+                    dispatch(login());
                     navigate("/");
                 }
 

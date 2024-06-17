@@ -17,14 +17,6 @@ const Navbar = () => {
     const navigate = useNavigate();
     const sidebarRef = useRef(null);
     const dispatch = useDispatch();
-    console.log('User',user);
-
-    // useEffect(() => {
-    //     if (user) {
-    //         setIsTokenAvailable(true)
-    //     }
-    //     console.log("Token:",isTokenAvailable);
-    // }, [isTokenAvailable]);
 
     const handleClickOutside = (event) => {
         if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
