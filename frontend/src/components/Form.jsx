@@ -22,6 +22,7 @@ const Form = ({ label }) => {
                         navigate('/login')
                     }
                     else {
+                        localStorage.setItem("userEmail",data.email);
                         dispatch(login());
                         navigate("/");
                     }
@@ -30,9 +31,8 @@ const Form = ({ label }) => {
             }
             else {
                 const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`, data);
-                console.log('Response:', response);
                 if (response) {
-                    console.log('Data:', data);
+                    localStorage.setItem("userEmail",data.email);
                     dispatch(login());
                     navigate("/");
                 }
