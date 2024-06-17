@@ -20,7 +20,7 @@ const Navbar = () => {
         if (localStorage.getItem("authToken")) {
             setIsTokenAvailable(true)
         }
-    }, []);
+    }, [isTokenAvailable]);
 
     const handleClickOutside = (event) => {
         if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -157,10 +157,10 @@ const Navbar = () => {
 
                         {isTokenAvailable && (
                             <div className='text-center'>
-                                <button className='text-white text-xl font-semibold hover:bg-red-500 rounded-xl w-full p-2 ml-2' 
-                                onClick={() => {
-                                    setCartView(true)
-                                    toggleSidebar()
+                                <button className='text-white text-xl font-semibold hover:bg-red-500 rounded-xl w-full p-2 ml-2'
+                                    onClick={() => {
+                                        setCartView(true)
+                                        toggleSidebar()
                                     }}>
                                     My Cart{" "}
                                     <Badge pill bg="primary">{data.length}</Badge>
